@@ -55,6 +55,7 @@
   ],
   "postcss": {
     "plugins": {
+      "tailwindcss": "./tailwind.config.js",
       "postcss-preset-env": {}
     }
   }

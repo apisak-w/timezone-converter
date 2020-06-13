@@ -6,6 +6,8 @@
             id="timezone-lookup"
             @input="findTimezone"
             autocomplete="off"
+            class="shadow appearance-none border"
+            placeholder="City name"
         />
 
         <div v-if="filteredTimezone">
