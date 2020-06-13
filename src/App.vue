@@ -5,13 +5,15 @@
   </div>
 </template>
 
-<script>
-import Timezone from './components/Timezone';
+<script lang="ts">
+import Vue from 'vue'
 
-export default {
-  name: 'App',
-  components: {
-    Timezone
-  }
-}
+import Timezone from '@/components/Timezone.vue';
+
+export default Vue.extend({
+    name: 'App',
+    components: {
+        Timezone
+    }
+})
 </script>

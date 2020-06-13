@@ -7,10 +7,17 @@
 </template>
 
 <script>
-import TimezoneSearch from './TimezoneSearch';
+import { Component, Vue } from 'vue-property-decorator';
 
-export default {
+import TimezoneSearch from './TimezoneSearch.vue';
+
+@Component({
   name: 'Timezone',
-  components: { TimezoneSearch }
+  components: {
+    TimezoneSearch
+  }
+})
+export default class Timezone extends Vue {
 }
+
 </script>
