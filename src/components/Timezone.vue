@@ -7,14 +7,14 @@
         <div class="flex flex-col">
             <div class="w-full flex flex-row justify-between">
                 <div class="text-gray-900 font-bold text-xl mb-2">
-                    <TimezoneSearch />
+                    <TimezoneSearch @saved:timezone="handleSavedTimezone" />
                 </div>
                 <div>🐐</div>
                 <div>🐑</div>
             </div>
         </div>
         <div class="mb-8">
-            <UserTimezone />
+            <UserTimezone :key="userTimezoneKey" />
         </div>
       </div>
     </div>
@@ -22,7 +22,7 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 
 import TimezoneSearch from "./TimezoneSearch.vue";
@@ -35,5 +35,16 @@ import UserTimezone from "./UserTimezone.vue";
     UserTimezone
   }
 })
-export default class Timezone extends Vue {}
+export default class Timezone extends Vue {
+    userTimezoneKey: Number;
+
+    constructor() {
+        super();
+        this.userTimezoneKey = Date.now();
+    }
+
+    handleSavedTimezone() {
+        this.userTimezoneKey = Date.now();
+    }
+}
 </script>

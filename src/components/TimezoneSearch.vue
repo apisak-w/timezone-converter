@@ -30,7 +30,6 @@ export interface ITimezone {
 export default class TimezoneSearch extends Vue {
     timezoneList: ITimezone[];
     userSelectedTimezoneList: ITimezone[];
-    isSaved: boolean;
     autocompleteTimestamp: Number;
 
     constructor() {
@@ -44,7 +43,6 @@ export default class TimezoneSearch extends Vue {
         this.userSelectedTimezoneList = localStorage.getItem('user_timezone_list') ?
             this.userSelectedTimezoneList = JSON.parse(localStorage.getItem('user_timezone_list') as string)
             : [];
-        this.isSaved = false;
         this.autocompleteTimestamp = Date.now();
     }
 
@@ -83,7 +81,7 @@ export default class TimezoneSearch extends Vue {
         // Force re-render autocomplete component once user selected timezone
         this.autocompleteTimestamp = Date.now();
 
-        this.isSaved = true;
+        this.$emit('saved:timezone')
     }
 }
 </script>
