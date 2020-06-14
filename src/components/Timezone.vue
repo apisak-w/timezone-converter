@@ -1,23 +1,39 @@
 <template>
   <div class="timezone">
-    <h1>Timezone component</h1>
+    <div class="w-full">
+      <div
+        class="border-2 border-gray-100 bg-white shadow rounded-b lg:rounded-b-none lg:rounded-r p-4 flex flex-col justify-between leading-normal"
+      >
+        <div class="flex flex-col">
+            <div class="w-full flex flex-row justify-between">
+                <div class="text-gray-900 font-bold text-xl mb-2">
+                    <TimezoneSearch />
+                </div>
+                <div>🐐</div>
+                <div>🐑</div>
+            </div>
+        </div>
+        <div class="mb-8">
+            <UserTimezone />
+        </div>
+      </div>
+    </div>
 
-    <TimezoneSearch />
   </div>
 </template>
 
 <script>
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue } from "vue-property-decorator";
 
-import TimezoneSearch from './TimezoneSearch.vue';
+import TimezoneSearch from "./TimezoneSearch.vue";
+import UserTimezone from "./UserTimezone.vue";
 
 @Component({
-  name: 'Timezone',
+  name: "Timezone",
   components: {
-    TimezoneSearch
+    TimezoneSearch,
+    UserTimezone
   }
 })
-export default class Timezone extends Vue {
-}
-
+export default class Timezone extends Vue {}
 </script>

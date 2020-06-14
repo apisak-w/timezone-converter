@@ -1,122 +1,79 @@
 <template>
     <div class="timezone-search">
-        <input
-            type="text"
-            v-model="findTimezoneKeyword"
-            id="timezone-lookup"
-            autocomplete="off"
-            class="shadow appearance-none border"
+        <autocomplete
+            :search="findTimezone"
+            :get-result-value="getResultValue"
+            @submit="setTimezone"
             placeholder="City name"
-            @input="findTimezone"
-            @focus="showTimezoneList = true"
-        />
-
-        <div v-if="filteredTimezone && showTimezoneList">
-            <ul class="w-50 bg-blue-500 text-white">
-                <li
-                    v-for="timezone in filteredTimezone"
-                    :key="timezone.key"
-                    @click="setTimezone(timezone)"
-                    class="border-b border-white py-2 cursor-pointer"
-                >{{ timezone.name }}</li>
-            </ul>
-        </div>
-
-        <div v-if="userSelectedTimezoneList">
-            <ul>
-                <li
-                    v-for="userTimezone in userSelectedTimezoneList"
-                    :key="userTimezone.key"
-                >{{ userTimezone.name }}</li>
-            </ul>
-            <button
-                @click="saveTimezone"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                Save
-            </button>
-        </div>
+        >
+        </autocomplete>
     </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import moment from "moment-timezone";
+import { uuid } from 'vue-uuid';
+import Autocomplete from '@trevoreyre/autocomplete-vue';
+import '@trevoreyre/autocomplete-vue/dist/style.css'
 
-@Component
+@Component({
+    components: {
+        Autocomplete
+    }
+})
 export default class TimezoneSearch extends Vue {
-    selectedTimezone: string;
-    findTimezoneKeyword: string;
-    filteredTimezone: { key: string; name: string }[];
     timezoneList: { key: string; name: string }[];
-    showTimezoneList: boolean;
     userSelectedTimezoneList: { key: string; name: string }[];
     isSaved: boolean;
 
     constructor() {
         super();
-        this.selectedTimezone = "";
-        this.findTimezoneKeyword = "";
-        this.filteredTimezone = [];
-        this.timezoneList = moment.tz.names().map((timezone, index) => {
+        this.timezoneList = moment.tz.names().map((timezone) => {
             return {
-                key: `${index}_${timezone.replace("/", "_").toUpperCase()}`,
+                key: `${uuid.v4()}`,
                 name: timezone
             };
         });
-        this.showTimezoneList = true;
         this.userSelectedTimezoneList = localStorage.getItem('user_timezone_list') ?
             this.userSelectedTimezoneList = JSON.parse(localStorage.getItem('user_timezone_list') as string)
             : [];
         this.isSaved = false;
     }
 
-    findTimezone() {
-        this.filteredTimezone = this.timezoneList.filter(timezone => {
+    findTimezone(keyword: string) {
+        if (keyword.length < 1) { return [] }
+        return this.timezoneList.filter(timezone => {
             return timezone.name
                 .toLowerCase()
-                .includes(this.findTimezoneKeyword.toLowerCase());
+                .includes(keyword.toLowerCase());
+        });
+    }
+
+    getResultValue(result: { key: string; name: string }): string | Number {
+        return result.name;
+    }
+
+    /**
+     * Remove selected timezone from timezone list in order to prevent duplicate key
+     * @param timezone_key Key of timezone to be removed from timezone list
+     */
+    removeTimezoneFromList(timezone_key: string) {
+        this.timezoneList = this.timezoneList.filter(timezone => {
+            return timezone.key !== timezone_key;
         });
     }
 
     setTimezone(timezone: { key: string; name: string }) {
-        this.findTimezoneKeyword = timezone.name;
-        this.showTimezoneList = false;
-        this.userSelectedTimezoneList.push(timezone)
+        this.removeTimezoneFromList(timezone.key);
+        this.userSelectedTimezoneList.push(timezone);
+        this.saveTimezone();
     }
 
     saveTimezone() {
+        console.log('Saving timezone')
         localStorage.setItem('user_timezone_list', JSON.stringify(this.userSelectedTimezoneList));
         this.isSaved = true;
     }
 }
-
-// export default {
-//   name: "TimezoneSearch",
-//   methods: {
-//     findTimezone() {
-//       this.filteredTimezone = this.timezoneList.filter(timezone => {
-//         return timezone.name
-//           .toLowerCase()
-//           .includes(this.findTimezoneKeyword.toLowerCase());
-//       });
-//     },
-//     setTimezone(timezone) {
-//       this.findTimezoneKeyword = timezone.name;
-//     }
-//   },
-//   data() {
-//     return {
-//       selectedTimezone: "",
-//       findTimezoneKeyword: "",
-//       filteredTimezone: [],
-//       timezoneList: moment.tz.names().map((timezone, index) => {
-//         // Convert array of string to array of object
-//         return {
-//           key: `${index}_${timezone.replace("/", "_").toUpperCase()}`,
-//           name: timezone
-//         };
-//       })
-//     };
-//   }
-// };
 </script>
