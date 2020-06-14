@@ -5,6 +5,7 @@
             :get-result-value="getResultValue"
             @submit="setTimezone"
             placeholder="City name"
+            :key="autocompleteTimestamp"
         >
         </autocomplete>
     </div>
@@ -17,15 +18,20 @@ import { uuid } from 'vue-uuid';
 import Autocomplete from '@trevoreyre/autocomplete-vue';
 import '@trevoreyre/autocomplete-vue/dist/style.css'
 
+export interface ITimezone {
+    key: string, name: string
+}
+
 @Component({
     components: {
         Autocomplete
     }
 })
 export default class TimezoneSearch extends Vue {
-    timezoneList: { key: string; name: string }[];
-    userSelectedTimezoneList: { key: string; name: string }[];
+    timezoneList: ITimezone[];
+    userSelectedTimezoneList: ITimezone[];
     isSaved: boolean;
+    autocompleteTimestamp: Number;
 
     constructor() {
         super();
@@ -39,9 +45,10 @@ export default class TimezoneSearch extends Vue {
             this.userSelectedTimezoneList = JSON.parse(localStorage.getItem('user_timezone_list') as string)
             : [];
         this.isSaved = false;
+        this.autocompleteTimestamp = Date.now();
     }
 
-    findTimezone(keyword: string) {
+    findTimezone(keyword: string): ITimezone[] {
         if (keyword.length < 1) { return [] }
         return this.timezoneList.filter(timezone => {
             return timezone.name
@@ -50,8 +57,8 @@ export default class TimezoneSearch extends Vue {
         });
     }
 
-    getResultValue(result: { key: string; name: string }): string | Number {
-        return result.name;
+    getResultValue(timezoneObject: ITimezone): string {
+        return timezoneObject.name;
     }
 
     /**
@@ -64,15 +71,18 @@ export default class TimezoneSearch extends Vue {
         });
     }
 
-    setTimezone(timezone: { key: string; name: string }) {
+    setTimezone(timezone: ITimezone) {
         this.removeTimezoneFromList(timezone.key);
         this.userSelectedTimezoneList.push(timezone);
         this.saveTimezone();
     }
 
     saveTimezone() {
-        console.log('Saving timezone')
         localStorage.setItem('user_timezone_list', JSON.stringify(this.userSelectedTimezoneList));
+
+        // Force re-render autocomplete component once user selected timezone
+        this.autocompleteTimestamp = Date.now();
+
         this.isSaved = true;
     }
 }
