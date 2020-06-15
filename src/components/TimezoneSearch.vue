@@ -17,19 +17,18 @@ import moment from "moment-timezone";
 import { uuid } from 'vue-uuid';
 import Autocomplete from '@trevoreyre/autocomplete-vue';
 import '@trevoreyre/autocomplete-vue/dist/style.css'
-
-export interface ITimezone {
-    key: string, name: string
-}
+// eslint-disable-next-line no-unused-vars
+import { ITimezone } from './Timezone';
 
 @Component({
     components: {
         Autocomplete
     }
 })
+
 export default class TimezoneSearch extends Vue {
     timezoneList: ITimezone[];
-    userSelectedTimezoneList: ITimezone[];
+    selectedTimezone: ITimezone;
     autocompleteTimestamp: Number;
 
     constructor() {
@@ -40,9 +39,7 @@ export default class TimezoneSearch extends Vue {
                 name: timezone
             };
         });
-        this.userSelectedTimezoneList = localStorage.getItem('user_timezone_list') ?
-            this.userSelectedTimezoneList = JSON.parse(localStorage.getItem('user_timezone_list') as string)
-            : [];
+        this.selectedTimezone = { "key": "", "name": "" };
         this.autocompleteTimestamp = Date.now();
     }
 
@@ -61,7 +58,7 @@ export default class TimezoneSearch extends Vue {
 
     /**
      * Remove selected timezone from timezone list in order to prevent duplicate key
-     * @param timezone_key Key of timezone to be removed from timezone list
+     * @param timezone_key Key of timezone to be removed from timezone list.
      */
     removeTimezoneFromList(timezone_key: string) {
         this.timezoneList = this.timezoneList.filter(timezone => {
@@ -71,17 +68,15 @@ export default class TimezoneSearch extends Vue {
 
     setTimezone(timezone: ITimezone) {
         this.removeTimezoneFromList(timezone.key);
-        this.userSelectedTimezoneList.push(timezone);
+        this.selectedTimezone = timezone;
         this.saveTimezone();
     }
 
     saveTimezone() {
-        localStorage.setItem('user_timezone_list', JSON.stringify(this.userSelectedTimezoneList));
-
         // Force re-render autocomplete component once user selected timezone
         this.autocompleteTimestamp = Date.now();
 
-        this.$emit('saved:timezone')
+        this.$emit('saved:timezone', this.selectedTimezone);
     }
 }
 </script>
