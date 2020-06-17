@@ -15,6 +15,7 @@
 import { Component, Vue } from "vue-property-decorator";
 import moment from "moment-timezone";
 import { uuid } from 'vue-uuid';
+// @ts-ignore
 import Autocomplete from '@trevoreyre/autocomplete-vue';
 import '@trevoreyre/autocomplete-vue/dist/style.css'
 // eslint-disable-next-line no-unused-vars
